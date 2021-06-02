@@ -1,0 +1,6 @@
+{
+	"package": "forgenpcs.mixin",
+	"refmap": "mixins.forgenpcs.refmap.json",
+	"mixins": [
+	]
+}
