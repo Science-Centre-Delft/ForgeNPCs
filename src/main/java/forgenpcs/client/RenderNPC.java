@@ -7,7 +7,6 @@ import forgenpcs.NPCEntity;
 import forgenpcs.client.renderer.entity.model.NPCArmorModel;
 import forgenpcs.client.renderer.entity.model.NPCModel;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.LivingRenderer;
 import net.minecraft.client.renderer.entity.layers.BipedArmorLayer;
@@ -15,8 +14,6 @@ import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.client.renderer.entity.layers.HeadLayer;
 import net.minecraft.client.renderer.entity.layers.HeldItemLayer;
 import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.item.CrossbowItem;
@@ -141,28 +138,6 @@ public class RenderNPC extends LivingRenderer<NPCEntity, NPCModel<NPCEntity>> {
 		
 		super.renderName(npc, displayName, matrixStack, buffer, packedLight);
 		matrixStack.pop();
-	}
-	
-	public void renderRightArm(MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, NPCEntity npc) {
-		this.renderItem(matrixStack, buffer, combinedLight, npc, this.entityModel.bipedRightArm, this.entityModel.bipedRightArmwear);
-	}
-	
-	public void renderLeftArm(MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, NPCEntity npc) {
-		this.renderItem(matrixStack, buffer, combinedLight, npc, this.entityModel.bipedLeftArm, this.entityModel.bipedLeftArmwear);
-	}
-	
-	private void renderItem(MatrixStack matrixStack, IRenderTypeBuffer buffer,
-			int combinedLight, NPCEntity npc, ModelRenderer rendererArm, ModelRenderer rendererArmwear) {
-		NPCModel<NPCEntity> playermodel = this.getEntityModel();
-		this.setModelVisibilities(npc);
-		playermodel.swingProgress = 0.0F;
-		playermodel.isSneak = false;
-		playermodel.swimAnimation = 0.0F;
-		playermodel.setRotationAngles(npc, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-		rendererArm.rotateAngleX = 0.0F;
-		rendererArm.render(matrixStack, buffer.getBuffer(RenderType.getEntitySolid(this.getEntityTexture(npc))), combinedLight, OverlayTexture.NO_OVERLAY);
-		rendererArmwear.rotateAngleX = 0.0F;
-		rendererArmwear.render(matrixStack, buffer.getBuffer(RenderType.getEntityTranslucent(this.getEntityTexture(npc))), combinedLight, OverlayTexture.NO_OVERLAY);
 	}
 	
 	@Override
