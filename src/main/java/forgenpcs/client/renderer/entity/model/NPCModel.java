@@ -60,7 +60,8 @@ public class NPCModel<T extends NPCEntity> extends BipedModel<T> {
 	
 	@Override
 	protected Iterable<ModelRenderer> getBodyParts() {
-		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.bipedLeftLegwear, this.bipedRightLegwear, this.bipedLeftArmwear, this.bipedRightArmwear, this.bipedBodyWear));
+		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.bipedLeftLegwear,
+				this.bipedRightLegwear, this.bipedLeftArmwear, this.bipedRightArmwear, this.bipedBodyWear));
 	}
 	
 	public void renderCape(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn) {
@@ -71,7 +72,8 @@ public class NPCModel<T extends NPCEntity> extends BipedModel<T> {
 	 * Sets this entity's model rotation angles.
 	 */
 	@Override
-	public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void setRotationAngles(
+			T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		super.setRotationAngles(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 		
 		// Set body part rotations.
