@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.entity.layers.HeadLayer;
 import net.minecraft.client.renderer.entity.layers.HeldItemLayer;
 import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -51,12 +50,12 @@ public class RenderNPC extends LivingRenderer<NPCEntity, NPCModel<NPCEntity>> {
 	private void setModelVisibilities(NPCEntity npc) {
 		NPCModel<NPCEntity> model = this.getEntityModel();
 		model.setVisible(true);
-		model.bipedHeadwear.showModel = npc.isWearing(PlayerModelPart.HAT);
-		model.bipedBodyWear.showModel = npc.isWearing(PlayerModelPart.JACKET);
-		model.bipedLeftLegwear.showModel = npc.isWearing(PlayerModelPart.LEFT_PANTS_LEG);
-		model.bipedRightLegwear.showModel = npc.isWearing(PlayerModelPart.RIGHT_PANTS_LEG);
-		model.bipedLeftArmwear.showModel = npc.isWearing(PlayerModelPart.LEFT_SLEEVE);
-		model.bipedRightArmwear.showModel = npc.isWearing(PlayerModelPart.RIGHT_SLEEVE);
+		model.bipedHeadwear.showModel = true;
+		model.bipedBodyWear.showModel = true;
+		model.bipedLeftLegwear.showModel = true;
+		model.bipedRightLegwear.showModel = true;
+		model.bipedLeftArmwear.showModel = true;
+		model.bipedRightArmwear.showModel = true;
 		model.isSneak = npc.isCrouching();
 		BipedModel.ArmPose bipedmodel$armpose = getArmPose(npc, Hand.MAIN_HAND);
 		BipedModel.ArmPose bipedmodel$armpose1 = getArmPose(npc, Hand.OFF_HAND);

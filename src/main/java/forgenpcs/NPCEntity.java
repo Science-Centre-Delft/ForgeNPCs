@@ -7,7 +7,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierManager;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -172,10 +171,6 @@ public class NPCEntity extends LivingEntity {
 	
 	public ResourceLocation getEntityTexture() {
 		return this.npcTexture;
-	}
-	
-	public boolean isWearing(PlayerModelPart playerModelPart) {
-		return false;
 	}
 	
 	@Override
