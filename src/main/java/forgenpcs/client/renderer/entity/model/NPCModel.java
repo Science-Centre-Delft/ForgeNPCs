@@ -28,12 +28,9 @@ public class NPCModel<T extends NPCEntity> extends BipedModel<T> {
 	public final ModelRenderer bipedRightLegwear;
 	public final ModelRenderer bipedBodyWear;
 	private final ModelRenderer bipedCape;
-	private final ModelRenderer bipedDeadmau5Head;
 	
 	public NPCModel(float modelSize) {
 		super(RenderType::getEntityTranslucent, modelSize, 0.0f, 64, 64);
-		this.bipedDeadmau5Head = new ModelRenderer(this, 24, 0);
-		this.bipedDeadmau5Head.addBox(-3.0f, -6.0f, -1.0f, 6.0f, 6.0f, 1.0f, modelSize);
 		this.bipedCape = new ModelRenderer(this, 0, 0);
 		this.bipedCape.setTextureSize(64, 32);
 		this.bipedCape.addBox(-5.0f, 0.0f, -1.0f, 10.0f, 16.0f, 1.0f, modelSize);
@@ -64,13 +61,6 @@ public class NPCModel<T extends NPCEntity> extends BipedModel<T> {
 	@Override
 	protected Iterable<ModelRenderer> getBodyParts() {
 		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.bipedLeftLegwear, this.bipedRightLegwear, this.bipedLeftArmwear, this.bipedRightArmwear, this.bipedBodyWear));
-	}
-	
-	public void renderEars(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn) {
-		this.bipedDeadmau5Head.copyModelAngles(this.bipedHead);
-		this.bipedDeadmau5Head.rotationPointX = 0.0f;
-		this.bipedDeadmau5Head.rotationPointY = 0.0f;
-		this.bipedDeadmau5Head.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn);
 	}
 	
 	public void renderCape(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn) {
@@ -140,7 +130,6 @@ public class NPCModel<T extends NPCEntity> extends BipedModel<T> {
 		this.bipedRightLegwear.showModel = visible;
 		this.bipedBodyWear.showModel = visible;
 		this.bipedCape.showModel = visible;
-		this.bipedDeadmau5Head.showModel = visible;
 	}
 	
 	@Override
