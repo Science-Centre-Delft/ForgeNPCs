@@ -27,17 +27,14 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class NPCEntity extends LivingEntity {
 	
 	/*
-	 * TODO - Determine which aspects of the entity should be setable and set up custom S->C packets to sync this.
-	 * Potentially interesting things to set/control:
-	 *     Display name (above-head name, can be done through DataWatcher).
-	 *     Held item.
-	 *     Position and rotation (head and body separately).
+	 * TODO - Determine which aspects of the entity should be setable.
+	 * Potentially unimplemented interesting things to set/control:
+	 *     Body part positions.
 	 *     Move from A to B, possibly through pathfinding "AI". Should have a walking animation.
+	 *     Animations (ability to define target rotations and positions at given timestamps, lerping between them).
 	 *     Sneak state.
-	 *     General arm, head, body and leg rotations (ideally with animation between them).
 	 *     Ability to look at the nearest player within a given range (animating back to default rotation otherwise).
 	 *         Could also move whole body when necessary to not screw the head off.
-	 *     Give the player elbows and knees?
 	 */
 	
 	private static final Rotations DEFAULT_HEAD_ROTATION = new Rotations(0.0F, 0.0F, 0.0F);
@@ -245,15 +242,14 @@ public class NPCEntity extends LivingEntity {
 		this.setBodyRotation(poseBodyNBT.isEmpty() ? DEFAULT_BODY_ROTATION : new Rotations(poseBodyNBT));
 		ListNBT poseLeftArmNBT = poseNBT.getList("LeftArm", 5);
 		this.setLeftArmRotation(poseLeftArmNBT.isEmpty() ? DEFAULT_LEFTARM_ROTATION : new Rotations(poseLeftArmNBT));
-		ListNBT postRightArmNBT = poseNBT.getList("RightArm", 5);
-		this.setRightArmRotation(postRightArmNBT.isEmpty() ? DEFAULT_RIGHTARM_ROTATION : new Rotations(postRightArmNBT));
-		ListNBT postLeftLegNBT = poseNBT.getList("LeftLeg", 5);
-		this.setLeftLegRotation(postLeftLegNBT.isEmpty() ? DEFAULT_LEFTLEG_ROTATION : new Rotations(postLeftLegNBT));
+		ListNBT poseRightArmNBT = poseNBT.getList("RightArm", 5);
+		this.setRightArmRotation(poseRightArmNBT.isEmpty() ? DEFAULT_RIGHTARM_ROTATION : new Rotations(poseRightArmNBT));
+		ListNBT poseLeftLegNBT = poseNBT.getList("LeftLeg", 5);
+		this.setLeftLegRotation(poseLeftLegNBT.isEmpty() ? DEFAULT_LEFTLEG_ROTATION : new Rotations(poseLeftLegNBT));
 		ListNBT poseRightLegNBT = poseNBT.getList("RightLeg", 5);
 		this.setRightLegRotation(poseRightLegNBT.isEmpty() ? DEFAULT_RIGHTLEG_ROTATION : new Rotations(poseRightLegNBT));
 		
 		// Read display name.
-		System.out.println("Reading DisplayName: " + compound.contains("DisplayName") + " " + compound.contains("DisplayName", 8));
 		if(compound.contains("DisplayName", 8)) {
 			String displayNameJson = compound.getString("DisplayName");
 			try {
@@ -292,6 +288,16 @@ public class NPCEntity extends LivingEntity {
 	public void setRightLegRotation(Rotations vec) {
 		this.rightLegRotation = vec;
 		this.dataManager.set(RIGHT_LEG_ROTATION, vec);
+	}
+	
+	@OnlyIn(Dist.CLIENT)
+	public Rotations getHeadRotation() {
+		return this.headRotation;
+	}
+	
+	@OnlyIn(Dist.CLIENT)
+	public Rotations getBodyRotation() {
+		return this.bodyRotation;
 	}
 	
 	@OnlyIn(Dist.CLIENT)
@@ -351,7 +357,7 @@ public class NPCEntity extends LivingEntity {
 	
 	@Override
 	public boolean canBePushed() {
-		return false; // TODO - Make variable?
+		return false;
 	}
 	
 	@Override

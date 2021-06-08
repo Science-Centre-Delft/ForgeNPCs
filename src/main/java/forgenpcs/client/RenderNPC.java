@@ -4,19 +4,17 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import forgenpcs.ForgeNPCsMod;
 import forgenpcs.NPCEntity;
+import forgenpcs.client.renderer.entity.model.NPCArmorModel;
+import forgenpcs.client.renderer.entity.model.NPCModel;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.LivingRenderer;
-import net.minecraft.client.renderer.entity.layers.ArrowLayer;
-import net.minecraft.client.renderer.entity.layers.BeeStingerLayer;
 import net.minecraft.client.renderer.entity.layers.BipedArmorLayer;
 import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.client.renderer.entity.layers.HeadLayer;
 import net.minecraft.client.renderer.entity.layers.HeldItemLayer;
-import net.minecraft.client.renderer.entity.layers.SpinAttackEffectLayer;
 import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.entity.model.PlayerModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.Entity;
@@ -33,24 +31,18 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 
-public class RenderNPC extends LivingRenderer<NPCEntity, PlayerModel<NPCEntity>> {
+public class RenderNPC extends LivingRenderer<NPCEntity, NPCModel<NPCEntity>> {
 	
 	// TODO - Make this adjustable through NBT data.
-	public static final ResourceLocation FAKE_PLAYER_TEXTURE =
+	public static final ResourceLocation NPC_DEFAULT_TEXTURE =
 			new ResourceLocation(ForgeNPCsMod.MODID, "textures/entity/fakeplayer/steve.png");
 	
 	public RenderNPC(EntityRendererManager renderManager) {
-		super(renderManager, new PlayerModel<>(0.0f, false), 0.5f);
-		this.addLayer(new BipedArmorLayer<>(this, new BipedModel<>(0.5F), new BipedModel<>(1.0F)));
+		super(renderManager, new NPCModel<>(0.0f), 0.5f);
+		this.addLayer(new BipedArmorLayer<>(this, new NPCArmorModel(0.5f), new NPCArmorModel(1.0f)));
 		this.addLayer(new HeldItemLayer<>(this));
-		this.addLayer(new ArrowLayer<>(this));
-//		this.addLayer(new Deadmau5HeadLayer(this)); // TODO - Create custom Layer for this if necessary.
-//		this.addLayer(new CapeLayer(this)); // TODO - Create custom Layer for this if necessary.
 		this.addLayer(new HeadLayer<>(this));
 		this.addLayer(new ElytraLayer<>(this));
-//		this.addLayer(new ParrotVariantLayer<>(this)); // TODO - Create custom Layer for this if necessary.
-		this.addLayer(new SpinAttackEffectLayer<>(this));
-		this.addLayer(new BeeStingerLayer<>(this));
 	}
 	
 	@Override
@@ -65,7 +57,7 @@ public class RenderNPC extends LivingRenderer<NPCEntity, PlayerModel<NPCEntity>>
 	}
 	
 	private void setModelVisibilities(NPCEntity npc) {
-		PlayerModel<NPCEntity> model = this.getEntityModel();
+		NPCModel<NPCEntity> model = this.getEntityModel();
 		model.setVisible(true);
 		model.bipedHeadwear.showModel = npc.isWearing(PlayerModelPart.HAT);
 		model.bipedBodyWear.showModel = npc.isWearing(PlayerModelPart.JACKET);
@@ -79,7 +71,7 @@ public class RenderNPC extends LivingRenderer<NPCEntity, PlayerModel<NPCEntity>>
 		if(bipedmodel$armpose.func_241657_a_()) {
 			bipedmodel$armpose1 = npc.getHeldItemOffhand().isEmpty() ? BipedModel.ArmPose.EMPTY : BipedModel.ArmPose.ITEM;
 		}
-
+		
 		if(npc.getPrimaryHand() == HandSide.RIGHT) {
 			model.rightArmPose = bipedmodel$armpose;
 			model.leftArmPose = bipedmodel$armpose1;
@@ -117,14 +109,12 @@ public class RenderNPC extends LivingRenderer<NPCEntity, PlayerModel<NPCEntity>>
 	}
 	
 	/**
-	 * Returns the location of an entity's texture.
-	 * 
-	 * TODO - Validate statement below.
-	 * Doesn't seem to be called unless you call Render.bindEntityTexture.
+	 * Returns the location of this entity's texture.
+	 * @param npc - The entity to get the texture from.
 	 */
 	@Override
 	public ResourceLocation getEntityTexture(NPCEntity npc) {
-		return FAKE_PLAYER_TEXTURE;
+		return NPC_DEFAULT_TEXTURE;
 	}
 	
 	@Override
@@ -163,7 +153,7 @@ public class RenderNPC extends LivingRenderer<NPCEntity, PlayerModel<NPCEntity>>
 	
 	private void renderItem(MatrixStack matrixStack, IRenderTypeBuffer buffer,
 			int combinedLight, NPCEntity npc, ModelRenderer rendererArm, ModelRenderer rendererArmwear) {
-		PlayerModel<NPCEntity> playermodel = this.getEntityModel();
+		NPCModel<NPCEntity> playermodel = this.getEntityModel();
 		this.setModelVisibilities(npc);
 		playermodel.swingProgress = 0.0F;
 		playermodel.isSneak = false;
@@ -185,7 +175,7 @@ public class RenderNPC extends LivingRenderer<NPCEntity, PlayerModel<NPCEntity>>
 			if(!npc.isSpinAttacking()) {
 				matrixStack.rotate(Vector3f.XP.rotationDegrees(f2 * (-90.0F - npc.rotationPitch)));
 			}
-
+			
 			Vector3d vector3d = npc.getLook(partialTicks);
 			Vector3d vector3d1 = npc.getMotion();
 			double d0 = Entity.horizontalMag(vector3d1);
