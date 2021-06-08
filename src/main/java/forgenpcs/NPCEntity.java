@@ -17,6 +17,8 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.ResourceLocationException;
 import net.minecraft.util.math.Rotations;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -37,6 +39,9 @@ public class NPCEntity extends LivingEntity {
 	 *         Could also move whole body when necessary to not screw the head off.
 	 */
 	
+	public static final String NPC_DEFAULT_TEXTURE_LOCATION = ForgeNPCsMod.MODID + ":textures/entity/npc/steve.png";
+	public static final ResourceLocation DEFAULT_NPC_TEXTURE = new ResourceLocation(NPC_DEFAULT_TEXTURE_LOCATION);
+	
 	private static final Rotations DEFAULT_HEAD_ROTATION = new Rotations(0.0F, 0.0F, 0.0F);
 	private static final Rotations DEFAULT_BODY_ROTATION = new Rotations(0.0F, 0.0F, 0.0F);
 	private static final Rotations DEFAULT_LEFTARM_ROTATION = new Rotations(-10.0F, 0.0F, -10.0F);
@@ -50,6 +55,8 @@ public class NPCEntity extends LivingEntity {
 	public static final DataParameter<Rotations> RIGHT_ARM_ROTATION = EntityDataManager.createKey(NPCEntity.class, DataSerializers.ROTATIONS);
 	public static final DataParameter<Rotations> LEFT_LEG_ROTATION = EntityDataManager.createKey(NPCEntity.class, DataSerializers.ROTATIONS);
 	public static final DataParameter<Rotations> RIGHT_LEG_ROTATION = EntityDataManager.createKey(NPCEntity.class, DataSerializers.ROTATIONS);
+	
+	public static final DataParameter<String> TEXTURE_LOCATION = EntityDataManager.createKey(NPCEntity.class, DataSerializers.STRING);
 	
 	public static final ITextComponent DEFAULT_DISPLAY_NAME = new StringTextComponent(ForgeNPCsMod.MODID + ":npc");
 	public static final DataParameter<ITextComponent> DISPLAY_NAME = EntityDataManager.createKey(NPCEntity.class, DataSerializers.TEXT_COMPONENT);
@@ -65,6 +72,7 @@ public class NPCEntity extends LivingEntity {
 	private final NonNullList<ItemStack> handItems = NonNullList.withSize(2, ItemStack.EMPTY);
 	private final NonNullList<ItemStack> armorItems = NonNullList.withSize(4, ItemStack.EMPTY);
 	
+	private ResourceLocation npcTexture = DEFAULT_NPC_TEXTURE;
 	private ITextComponent displayName = DEFAULT_DISPLAY_NAME;
 	
 	public NPCEntity(EntityType<? extends LivingEntity> entityType, World world) {
@@ -89,6 +97,7 @@ public class NPCEntity extends LivingEntity {
 		this.dataManager.register(LEFT_LEG_ROTATION, DEFAULT_LEFTLEG_ROTATION);
 		this.dataManager.register(RIGHT_LEG_ROTATION, DEFAULT_RIGHTLEG_ROTATION);
 		this.dataManager.register(DISPLAY_NAME, DEFAULT_DISPLAY_NAME);
+		this.dataManager.register(TEXTURE_LOCATION, NPC_DEFAULT_TEXTURE_LOCATION);
 	}
 	
 	@Override
@@ -156,6 +165,15 @@ public class NPCEntity extends LivingEntity {
 		return this.displayName;
 	}
 	
+	public void setEntityTexture(ResourceLocation textureLocation) {
+		this.npcTexture = textureLocation;
+		this.dataManager.set(TEXTURE_LOCATION, textureLocation.toString());
+	}
+	
+	public ResourceLocation getEntityTexture() {
+		return this.npcTexture;
+	}
+	
 	public boolean isWearing(PlayerModelPart playerModelPart) {
 		return false;
 	}
@@ -212,6 +230,11 @@ public class NPCEntity extends LivingEntity {
 		if(this.displayName != null) {
 			compound.putString("DisplayName", ITextComponent.Serializer.toJson(this.displayName));
 		}
+		
+		// Write texture location.
+		if(!this.npcTexture.equals(DEFAULT_NPC_TEXTURE)) {
+			compound.putString("Texture", this.npcTexture.toString());
+		}
 	}
 	
 	@Override
@@ -256,6 +279,15 @@ public class NPCEntity extends LivingEntity {
 				this.setDisplayName(ITextComponent.Serializer.getComponentFromJson(displayNameJson));
 			} catch (JsonParseException e) {
 				this.setDisplayName(new StringTextComponent(displayNameJson));
+			}
+		}
+		
+		// Read texture location.
+		if(compound.contains("Texture", 8)) {
+			try {
+				this.setEntityTexture(new ResourceLocation(compound.getString("Texture")));
+			} catch (ResourceLocationException e) {
+				this.setEntityTexture(DEFAULT_NPC_TEXTURE);
 			}
 		}
 	}
@@ -352,6 +384,16 @@ public class NPCEntity extends LivingEntity {
 		ITextComponent displayName = this.dataManager.get(DISPLAY_NAME);
 		if(!this.displayName.equals(displayName)) {
 			this.setDisplayName(displayName);
+		}
+		
+		ResourceLocation textureLocation;
+		try {
+			textureLocation = new ResourceLocation(this.dataManager.get(TEXTURE_LOCATION));
+		} catch (ResourceLocationException e) {
+			textureLocation = DEFAULT_NPC_TEXTURE;
+		}
+		if(!this.npcTexture.equals(textureLocation)) {
+			this.setEntityTexture(textureLocation);
 		}
 	}
 	

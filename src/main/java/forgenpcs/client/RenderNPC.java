@@ -2,7 +2,6 @@ package forgenpcs.client;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-import forgenpcs.ForgeNPCsMod;
 import forgenpcs.NPCEntity;
 import forgenpcs.client.renderer.entity.model.NPCArmorModel;
 import forgenpcs.client.renderer.entity.model.NPCModel;
@@ -29,10 +28,6 @@ import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 
 public class RenderNPC extends LivingRenderer<NPCEntity, NPCModel<NPCEntity>> {
-	
-	// TODO - Make this adjustable through NBT data.
-	public static final ResourceLocation NPC_DEFAULT_TEXTURE =
-			new ResourceLocation(ForgeNPCsMod.MODID, "textures/entity/fakeplayer/steve.png");
 	
 	public RenderNPC(EntityRendererManager renderManager) {
 		super(renderManager, new NPCModel<>(0.0f), 0.5f);
@@ -111,7 +106,7 @@ public class RenderNPC extends LivingRenderer<NPCEntity, NPCModel<NPCEntity>> {
 	 */
 	@Override
 	public ResourceLocation getEntityTexture(NPCEntity npc) {
-		return NPC_DEFAULT_TEXTURE;
+		return npc.getEntityTexture();
 	}
 	
 	@Override
