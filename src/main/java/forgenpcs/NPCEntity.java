@@ -4,9 +4,12 @@ import com.google.gson.JsonParseException;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierManager;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.LookAtGoal;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -25,7 +28,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class NPCEntity extends LivingEntity {
+public class NPCEntity extends MobEntity {
 	
 	/*
 	 * TODO - Determine which aspects of the entity should be setable.
@@ -34,8 +37,6 @@ public class NPCEntity extends LivingEntity {
 	 *     Move from A to B, possibly through pathfinding "AI". Should have a walking animation.
 	 *     Animations (ability to define target rotations and positions at given timestamps, lerping between them).
 	 *     Sneak state.
-	 *     Ability to look at the nearest player within a given range (animating back to default rotation otherwise).
-	 *         Could also move whole body when necessary to not screw the head off.
 	 */
 	
 	public static final String NPC_DEFAULT_TEXTURE_LOCATION = ForgeNPCsMod.MODID + ":textures/entity/npc/steve.png";
@@ -74,16 +75,44 @@ public class NPCEntity extends LivingEntity {
 	private ResourceLocation npcTexture = DEFAULT_NPC_TEXTURE;
 	private ITextComponent displayName = DEFAULT_DISPLAY_NAME;
 	
-	public NPCEntity(EntityType<? extends LivingEntity> entityType, World world) {
+	private boolean lookAtPlayer = false;
+	private final Goal lookAtPlayerGoal = new LookAtGoal(this, PlayerEntity.class, 10f, 1f) {
+				
+				// Override cooldown after trigger by always directly stopping after having performed the action.
+				@Override
+				public boolean shouldContinueExecuting() {
+					return false;
+				}
+			};
+	
+	public NPCEntity(EntityType<? extends MobEntity> entityType, World world) {
 		super(entityType, world);
 	}
 	
 	public static AttributeModifierMap.MutableAttribute registerAttributes() {
-		return LivingEntity.registerAttributes();
+		return MobEntity.func_233666_p_();
 //				.createMutableAttribute(Attributes.ATTACK_DAMAGE, 1.0d)
 //				.createMutableAttribute(Attributes.MOVEMENT_SPEED, (double) 0.1f)
 //				.createMutableAttribute(Attributes.ATTACK_SPEED).createMutableAttribute(Attributes.LUCK)
 //				.createMutableAttribute(net.minecraftforge.common.ForgeMod.REACH_DISTANCE.get());
+	}
+	
+	@Override
+	protected void registerGoals() {
+		if(this.lookAtPlayer) {
+			this.goalSelector.addGoal(1, this.lookAtPlayerGoal);
+		}
+	}
+	
+	public void setLookAtPlayer(boolean lookAtPlayer) {
+		if(lookAtPlayer != this.lookAtPlayer) {
+			this.lookAtPlayer = lookAtPlayer;
+			if(this.lookAtPlayer) {
+				this.goalSelector.addGoal(1, this.lookAtPlayerGoal);
+			} else {
+				this.goalSelector.removeGoal(this.lookAtPlayerGoal);
+			}
+		}
 	}
 	
 	@Override
@@ -105,7 +134,7 @@ public class NPCEntity extends LivingEntity {
 		// Initialize the attributes on the first call.
 		// This cannot be done directly in class construction due to the super constructor calling this method earlier.
 		if(this.attributes == null) {
-			this.attributes = new AttributeModifierManager(LivingEntity.registerAttributes().create());
+			this.attributes = new AttributeModifierManager(NPCEntity.registerAttributes().create());
 		}
 		return this.attributes;
 	}
@@ -230,6 +259,9 @@ public class NPCEntity extends LivingEntity {
 		if(!this.npcTexture.equals(DEFAULT_NPC_TEXTURE)) {
 			compound.putString("Texture", this.npcTexture.toString());
 		}
+		
+		// Write goal data.
+		compound.putBoolean("LookAtPlayer", this.lookAtPlayer);
 	}
 	
 	@Override
@@ -285,6 +317,9 @@ public class NPCEntity extends LivingEntity {
 				this.setEntityTexture(DEFAULT_NPC_TEXTURE);
 			}
 		}
+		
+		// Read goal data.
+		this.setLookAtPlayer(compound.contains("LookAtPlayer", 1) && compound.getBoolean("LookAtPlayer"));
 	}
 	
 	public void setHeadRotation(Rotations vec) {
