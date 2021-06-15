@@ -74,31 +74,43 @@ public class NPCModel<T extends NPCEntity> extends BipedModel<T> {
 	@Override
 	public void setRotationAngles(
 			T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+		
+		// Reset body part rotations.
+		this.bipedHead.setRotationPoint(0f, 0f, 0f);
+		this.bipedBody.setRotationPoint(0f, 0f, 0f);
+		this.bipedLeftArm.setRotationPoint(0f, 0f, 0f);
+		this.bipedRightArm.setRotationPoint(0f, 0f, 0f);
+		this.bipedLeftLeg.setRotationPoint(0f, 0f, 0f);
+		this.bipedRightLeg.setRotationPoint(0f, 0f, 0f);
+		
+		// Set BipedModel animation body part rotations.
 		super.setRotationAngles(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 		
-		// Set body part rotations.
-		this.bipedHead.rotateAngleX = ((float) Math.PI / 180f) * entityIn.getHeadRotation().getX();
-		this.bipedHead.rotateAngleY = ((float) Math.PI / 180f) * entityIn.getHeadRotation().getY();
-		this.bipedHead.rotateAngleZ = ((float) Math.PI / 180f) * entityIn.getHeadRotation().getZ();
-		this.bipedHead.setRotationPoint(0.0f, 1.0f, 0.0f);
-		this.bipedBody.rotateAngleX = ((float) Math.PI / 180f) * entityIn.getBodyRotation().getX();
-		this.bipedBody.rotateAngleY = ((float) Math.PI / 180f) * entityIn.getBodyRotation().getY();
-		this.bipedBody.rotateAngleZ = ((float) Math.PI / 180f) * entityIn.getBodyRotation().getZ();
-		this.bipedLeftArm.rotateAngleX = ((float) Math.PI / 180f) * entityIn.getLeftArmRotation().getX();
-		this.bipedLeftArm.rotateAngleY = ((float) Math.PI / 180f) * entityIn.getLeftArmRotation().getY();
-		this.bipedLeftArm.rotateAngleZ = ((float) Math.PI / 180f) * entityIn.getLeftArmRotation().getZ();
-		this.bipedRightArm.rotateAngleX = ((float) Math.PI / 180f) * entityIn.getRightArmRotation().getX();
-		this.bipedRightArm.rotateAngleY = ((float) Math.PI / 180f) * entityIn.getRightArmRotation().getY();
-		this.bipedRightArm.rotateAngleZ = ((float) Math.PI / 180f) * entityIn.getRightArmRotation().getZ();
-		this.bipedLeftLeg.rotateAngleX = ((float) Math.PI / 180f) * entityIn.getLeftLegRotation().getX();
-		this.bipedLeftLeg.rotateAngleY = ((float) Math.PI / 180f) * entityIn.getLeftLegRotation().getY();
-		this.bipedLeftLeg.rotateAngleZ = ((float) Math.PI / 180f) * entityIn.getLeftLegRotation().getZ();
-		this.bipedLeftLeg.setRotationPoint(1.9f, 11.0f, 0.0f);
-		this.bipedRightLeg.rotateAngleX = ((float) Math.PI / 180f) * entityIn.getRightLegRotation().getX();
-		this.bipedRightLeg.rotateAngleY = ((float) Math.PI / 180f) * entityIn.getRightLegRotation().getY();
-		this.bipedRightLeg.rotateAngleZ = ((float) Math.PI / 180f) * entityIn.getRightLegRotation().getZ();
-		this.bipedRightLeg.setRotationPoint(-1.9f, 11.0f, 0.0f);
+		// Modify body part rotations based on user-defined rotation values.
+		this.bipedHead.rotateAngleX += ((float) Math.PI / 180f) * entityIn.getHeadRotation().getX();
+		this.bipedHead.rotateAngleY += ((float) Math.PI / 180f) * entityIn.getHeadRotation().getY();
+		this.bipedHead.rotateAngleZ += ((float) Math.PI / 180f) * entityIn.getHeadRotation().getZ();
+		this.bipedBody.rotateAngleX += ((float) Math.PI / 180f) * entityIn.getBodyRotation().getX();
+		this.bipedBody.rotateAngleY += ((float) Math.PI / 180f) * entityIn.getBodyRotation().getY();
+		this.bipedBody.rotateAngleZ += ((float) Math.PI / 180f) * entityIn.getBodyRotation().getZ();
+		this.bipedLeftArm.rotateAngleX += ((float) Math.PI / 180f) * entityIn.getLeftArmRotation().getX();
+		this.bipedLeftArm.rotateAngleY += ((float) Math.PI / 180f) * entityIn.getLeftArmRotation().getY();
+		this.bipedLeftArm.rotateAngleZ += ((float) Math.PI / 180f) * entityIn.getLeftArmRotation().getZ();
+		this.bipedRightArm.rotateAngleX += ((float) Math.PI / 180f) * entityIn.getRightArmRotation().getX();
+		this.bipedRightArm.rotateAngleY += ((float) Math.PI / 180f) * entityIn.getRightArmRotation().getY();
+		this.bipedRightArm.rotateAngleZ += ((float) Math.PI / 180f) * entityIn.getRightArmRotation().getZ();
+		this.bipedLeftLeg.rotateAngleX += ((float) Math.PI / 180f) * entityIn.getLeftLegRotation().getX();
+		this.bipedLeftLeg.rotateAngleY += ((float) Math.PI / 180f) * entityIn.getLeftLegRotation().getY();
+		this.bipedLeftLeg.rotateAngleZ += ((float) Math.PI / 180f) * entityIn.getLeftLegRotation().getZ();
+		this.bipedRightLeg.rotateAngleX += ((float) Math.PI / 180f) * entityIn.getRightLegRotation().getX();
+		this.bipedRightLeg.rotateAngleY += ((float) Math.PI / 180f) * entityIn.getRightLegRotation().getY();
+		this.bipedRightLeg.rotateAngleZ += ((float) Math.PI / 180f) * entityIn.getRightLegRotation().getZ();
 		this.bipedHeadwear.copyModelAngles(this.bipedHead);
+		
+		// Set body part rotation points.
+		this.bipedHead.setRotationPoint(0.0f, 1.0f, 0.0f);
+		this.bipedLeftLeg.setRotationPoint(1.9f, 11.0f, 0.0f);
+		this.bipedRightLeg.setRotationPoint(-1.9f, 11.0f, 0.0f);
 		
 		// Set worn armor rotations.
 		this.bipedLeftLegwear.copyModelAngles(this.bipedLeftLeg);
