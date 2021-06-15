@@ -2,11 +2,13 @@ package forgenpcs;
 
 import com.google.gson.JsonParseException;
 
+import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierManager;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtGoal;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +30,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class NPCEntity extends MobEntity {
+public class NPCEntity extends CreatureEntity {
 	
 	/*
 	 * TODO - Determine which aspects of the entity should be setable.
@@ -85,7 +87,7 @@ public class NPCEntity extends MobEntity {
 				}
 			};
 	
-	public NPCEntity(EntityType<? extends MobEntity> entityType, World world) {
+	public NPCEntity(EntityType<? extends CreatureEntity> entityType, World world) {
 		super(entityType, world);
 	}
 	
