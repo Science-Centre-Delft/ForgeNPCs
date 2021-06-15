@@ -11,6 +11,8 @@ import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtGoal;
+import net.minecraft.entity.ai.goal.LookRandomlyGoal;
+import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
@@ -77,8 +79,25 @@ public class NPCEntity extends CreatureEntity {
 	private ResourceLocation npcTexture = DEFAULT_NPC_TEXTURE;
 	private ITextComponent displayName = DEFAULT_DISPLAY_NAME;
 	
-	private boolean lookAtPlayer = false;
-	private final Goal lookAtPlayerGoal = new LookAtGoal(this, PlayerEntity.class, 10f, 1f) {
+	private Goal lookAtPlayerGoal = null;
+	private Goal lookRandomlyGoal = null;
+	private Goal waterAvoidingRandomWalkingGoal = null;
+	
+	public NPCEntity(EntityType<? extends CreatureEntity> entityType, World world) {
+		super(entityType, world);
+	}
+	
+	public static AttributeModifierMap.MutableAttribute registerAttributes() {
+		return MobEntity.func_233666_p_().createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.5d);
+	}
+	
+	@Override
+	protected void registerGoals() {
+	}
+	
+	public void setLookAtPlayer(boolean lookAtPlayer) {
+		if(lookAtPlayer && this.lookAtPlayerGoal == null) {
+			this.lookAtPlayerGoal = new LookAtGoal(this, PlayerEntity.class, 10f, 1f) {
 				
 				// Override cooldown after trigger by always directly stopping after having performed the action.
 				@Override
@@ -86,34 +105,30 @@ public class NPCEntity extends CreatureEntity {
 					return false;
 				}
 			};
-	
-	public NPCEntity(EntityType<? extends CreatureEntity> entityType, World world) {
-		super(entityType, world);
-	}
-	
-	public static AttributeModifierMap.MutableAttribute registerAttributes() {
-		return MobEntity.func_233666_p_();
-//				.createMutableAttribute(Attributes.ATTACK_DAMAGE, 1.0d)
-//				.createMutableAttribute(Attributes.MOVEMENT_SPEED, (double) 0.1f)
-//				.createMutableAttribute(Attributes.ATTACK_SPEED).createMutableAttribute(Attributes.LUCK)
-//				.createMutableAttribute(net.minecraftforge.common.ForgeMod.REACH_DISTANCE.get());
-	}
-	
-	@Override
-	protected void registerGoals() {
-		if(this.lookAtPlayer) {
 			this.goalSelector.addGoal(1, this.lookAtPlayerGoal);
+		} else if(!lookAtPlayer && this.lookAtPlayerGoal != null) {
+			this.goalSelector.removeGoal(this.lookAtPlayerGoal);
+			this.lookAtPlayerGoal = null;
 		}
 	}
 	
-	public void setLookAtPlayer(boolean lookAtPlayer) {
-		if(lookAtPlayer != this.lookAtPlayer) {
-			this.lookAtPlayer = lookAtPlayer;
-			if(this.lookAtPlayer) {
-				this.goalSelector.addGoal(1, this.lookAtPlayerGoal);
-			} else {
-				this.goalSelector.removeGoal(this.lookAtPlayerGoal);
-			}
+	public void setLookRandomly(boolean lookRandomly) {
+		if(lookRandomly && this.lookRandomlyGoal == null) {
+			this.lookRandomlyGoal = new LookRandomlyGoal(this);
+			this.goalSelector.addGoal(1, this.lookRandomlyGoal);
+		} else if(!lookRandomly && this.lookRandomlyGoal != null) {
+			this.goalSelector.removeGoal(this.lookRandomlyGoal);
+			this.lookRandomlyGoal = null;
+		}
+	}
+	
+	public void setWaterAvoidingRandomWalking(boolean waterAvoidingRandomWalking) {
+		if(waterAvoidingRandomWalking && this.waterAvoidingRandomWalkingGoal == null) {
+			this.waterAvoidingRandomWalkingGoal = new WaterAvoidingRandomWalkingGoal(this, 0.35d);
+			this.goalSelector.addGoal(1, this.waterAvoidingRandomWalkingGoal);
+		} else if(!waterAvoidingRandomWalking && this.waterAvoidingRandomWalkingGoal != null) {
+			this.goalSelector.removeGoal(this.waterAvoidingRandomWalkingGoal);
+			this.waterAvoidingRandomWalkingGoal = null;
 		}
 	}
 	
@@ -262,8 +277,13 @@ public class NPCEntity extends CreatureEntity {
 			compound.putString("Texture", this.npcTexture.toString());
 		}
 		
+		// Write sneak state.
+		compound.putBoolean("Sneaking", this.isSneaking());
+		
 		// Write goal data.
-		compound.putBoolean("LookAtPlayer", this.lookAtPlayer);
+		compound.putBoolean("LookAtPlayer", this.lookAtPlayerGoal != null);
+		compound.putBoolean("LookRandomly", this.lookRandomlyGoal != null);
+		compound.putBoolean("WaterAvoidingRandomWalkingGoal", this.waterAvoidingRandomWalkingGoal != null);
 	}
 	
 	@Override
@@ -320,8 +340,14 @@ public class NPCEntity extends CreatureEntity {
 			}
 		}
 		
+		// Read sneak state.
+		this.setSneaking(compound.contains("Sneaking", 1) && compound.getBoolean("Sneaking"));
+		
 		// Read goal data.
 		this.setLookAtPlayer(compound.contains("LookAtPlayer", 1) && compound.getBoolean("LookAtPlayer"));
+		this.setLookRandomly(compound.contains("LookRandomly", 1) && compound.getBoolean("LookRandomly"));
+		this.setWaterAvoidingRandomWalking(compound.contains("WaterAvoidingRandomWalking", 1)
+				&& compound.getBoolean("WaterAvoidingRandomWalking"));
 	}
 	
 	public void setHeadRotation(Rotations vec) {
