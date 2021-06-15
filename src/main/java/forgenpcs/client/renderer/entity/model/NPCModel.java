@@ -76,12 +76,24 @@ public class NPCModel<T extends NPCEntity> extends BipedModel<T> {
 			T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		
 		// Reset body part rotations.
-		this.bipedHead.setRotationPoint(0f, 0f, 0f);
-		this.bipedBody.setRotationPoint(0f, 0f, 0f);
-		this.bipedLeftArm.setRotationPoint(0f, 0f, 0f);
-		this.bipedRightArm.setRotationPoint(0f, 0f, 0f);
-		this.bipedLeftLeg.setRotationPoint(0f, 0f, 0f);
-		this.bipedRightLeg.setRotationPoint(0f, 0f, 0f);
+		this.bipedHead.rotateAngleX = 0f;
+		this.bipedHead.rotateAngleY = 0f;
+		this.bipedHead.rotateAngleZ = 0f;
+		this.bipedBody.rotateAngleX = 0f;
+		this.bipedBody.rotateAngleY = 0f;
+		this.bipedBody.rotateAngleZ = 0f;
+		this.bipedLeftArm.rotateAngleX = 0f;
+		this.bipedLeftArm.rotateAngleY = 0f;
+		this.bipedLeftArm.rotateAngleZ = 0f;
+		this.bipedRightArm.rotateAngleX = 0f;
+		this.bipedRightArm.rotateAngleY = 0f;
+		this.bipedRightArm.rotateAngleZ = 0f;
+		this.bipedLeftLeg.rotateAngleX = 0f;
+		this.bipedLeftLeg.rotateAngleY = 0f;
+		this.bipedLeftLeg.rotateAngleZ = 0f;
+		this.bipedRightLeg.rotateAngleX = 0f;
+		this.bipedRightLeg.rotateAngleY = 0f;
+		this.bipedRightLeg.rotateAngleZ = 0f;
 		
 		// Set BipedModel animation body part rotations.
 		super.setRotationAngles(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
@@ -106,11 +118,6 @@ public class NPCModel<T extends NPCEntity> extends BipedModel<T> {
 		this.bipedRightLeg.rotateAngleY += ((float) Math.PI / 180f) * entityIn.getRightLegRotation().getY();
 		this.bipedRightLeg.rotateAngleZ += ((float) Math.PI / 180f) * entityIn.getRightLegRotation().getZ();
 		this.bipedHeadwear.copyModelAngles(this.bipedHead);
-		
-		// Set body part rotation points.
-		this.bipedHead.setRotationPoint(0.0f, 1.0f, 0.0f);
-		this.bipedLeftLeg.setRotationPoint(1.9f, 11.0f, 0.0f);
-		this.bipedRightLeg.setRotationPoint(-1.9f, 11.0f, 0.0f);
 		
 		// Set worn armor rotations.
 		this.bipedLeftLegwear.copyModelAngles(this.bipedLeftLeg);

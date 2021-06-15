@@ -56,7 +56,7 @@ public class RenderNPC extends LivingRenderer<NPCEntity, NPCModel<NPCEntity>> {
 		model.bipedRightLegwear.showModel = true;
 		model.bipedLeftArmwear.showModel = true;
 		model.bipedRightArmwear.showModel = true;
-		model.isSneak = npc.isCrouching();
+		model.isSneak = npc.isSneaking();
 		BipedModel.ArmPose bipedmodel$armpose = getArmPose(npc, Hand.MAIN_HAND);
 		BipedModel.ArmPose bipedmodel$armpose1 = getArmPose(npc, Hand.OFF_HAND);
 		if(bipedmodel$armpose.func_241657_a_()) {
