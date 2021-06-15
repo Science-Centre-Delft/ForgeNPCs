@@ -12,6 +12,7 @@ import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtGoal;
 import net.minecraft.entity.ai.goal.LookRandomlyGoal;
+import net.minecraft.entity.ai.goal.PanicGoal;
 import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -81,6 +82,8 @@ public class NPCEntity extends CreatureEntity {
 	private Goal lookAtPlayerGoal = null;
 	private Goal lookRandomlyGoal = null;
 	private Goal waterAvoidingRandomWalkingGoal = null;
+	private Goal panicGoal = null;
+	private double panicGoalSpeed = -1d;
 	
 	public NPCEntity(EntityType<? extends CreatureEntity> entityType, World world) {
 		super(entityType, world);
@@ -128,6 +131,22 @@ public class NPCEntity extends CreatureEntity {
 		} else if(!waterAvoidingRandomWalking && this.waterAvoidingRandomWalkingGoal != null) {
 			this.goalSelector.removeGoal(this.waterAvoidingRandomWalkingGoal);
 			this.waterAvoidingRandomWalkingGoal = null;
+		}
+	}
+	
+	public void setPanic(double movementSpeed) {
+		if(movementSpeed > 0 && this.panicGoal == null) {
+			this.panicGoalSpeed = movementSpeed;
+			this.panicGoal = new PanicGoal(this, movementSpeed) {
+				@Override
+				public boolean shouldExecute() {
+					return this.findRandomPosition();
+				}
+			};
+			this.goalSelector.addGoal(1, this.panicGoal);
+		} else if(movementSpeed <= 0 && this.panicGoal != null) {
+			this.goalSelector.removeGoal(this.panicGoal);
+			this.panicGoal = null;
 		}
 	}
 	
@@ -283,6 +302,7 @@ public class NPCEntity extends CreatureEntity {
 		compound.putBoolean("LookAtPlayer", this.lookAtPlayerGoal != null);
 		compound.putBoolean("LookRandomly", this.lookRandomlyGoal != null);
 		compound.putBoolean("WaterAvoidingRandomWalkingGoal", this.waterAvoidingRandomWalkingGoal != null);
+		compound.putDouble("PanicSpeed", this.panicGoalSpeed);
 	}
 	
 	@Override
@@ -347,6 +367,7 @@ public class NPCEntity extends CreatureEntity {
 		this.setLookRandomly(compound.contains("LookRandomly", 1) && compound.getBoolean("LookRandomly"));
 		this.setWaterAvoidingRandomWalking(compound.contains("WaterAvoidingRandomWalking", 1)
 				&& compound.getBoolean("WaterAvoidingRandomWalking"));
+		this.setPanic(compound.contains("PanicSpeed", 6) ? compound.getDouble("PanicSpeed") : -1d);
 	}
 	
 	public void setHeadRotation(Rotations vec) {
