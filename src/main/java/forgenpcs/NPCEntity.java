@@ -40,7 +40,6 @@ public class NPCEntity extends CreatureEntity {
 	 *     Body part positions.
 	 *     Move from A to B, possibly through pathfinding "AI". Should have a walking animation.
 	 *     Animations (ability to define target rotations and positions at given timestamps, lerping between them).
-	 *     Sneak state.
 	 */
 	
 	public static final String NPC_DEFAULT_TEXTURE_LOCATION = ForgeNPCsMod.MODID + ":textures/entity/npc/steve.png";
