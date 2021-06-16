@@ -77,6 +77,7 @@ public class NPCEntity extends CreatureEntity {
 	private final NonNullList<ItemStack> armorItems = NonNullList.withSize(4, ItemStack.EMPTY);
 	
 	private ResourceLocation npcTexture = DEFAULT_NPC_TEXTURE;
+	private String npcTextureUrl = null;
 	private ITextComponent displayName = DEFAULT_DISPLAY_NAME;
 	
 	private Goal lookAtPlayerGoal = null;
@@ -229,12 +230,21 @@ public class NPCEntity extends CreatureEntity {
 	}
 	
 	public void setEntityTexture(ResourceLocation textureLocation) {
+		this.setEntityTexture(textureLocation, null);
+	}
+	
+	public void setEntityTexture(ResourceLocation textureLocation, String url) {
 		this.npcTexture = textureLocation;
-		this.dataManager.set(TEXTURE_LOCATION, textureLocation.toString());
+		this.npcTextureUrl = url;
+		this.dataManager.set(TEXTURE_LOCATION, textureLocation.toString() + (url == null ? "" : ":" + url));
 	}
 	
 	public ResourceLocation getEntityTexture() {
 		return this.npcTexture;
+	}
+	
+	public String getEntityTextureUrl() {
+		return this.npcTextureUrl;
 	}
 	
 	@Override
@@ -291,8 +301,9 @@ public class NPCEntity extends CreatureEntity {
 		}
 		
 		// Write texture location.
-		if(!this.npcTexture.equals(DEFAULT_NPC_TEXTURE)) {
-			compound.putString("Texture", this.npcTexture.toString());
+		if(!this.npcTexture.equals(DEFAULT_NPC_TEXTURE) || this.npcTextureUrl != null) {
+			compound.putString("Texture",
+					this.npcTexture.toString() + (this.npcTextureUrl == null ? "" : ":" + this.npcTextureUrl));
 		}
 		
 		// Write sneak state.
@@ -352,8 +363,24 @@ public class NPCEntity extends CreatureEntity {
 		
 		// Read texture location.
 		if(compound.contains("Texture", 8)) {
+			String textureLocationStr = compound.getString("Texture");
+			String[] textureLocationSplit = textureLocationStr.split(":", 3);
+			ResourceLocation textureLocation;
+			String textureUrl;
+			if(textureLocationSplit.length >= 2) {
+				try {
+					textureLocation = new ResourceLocation(textureLocationSplit[0], textureLocationSplit[1]);
+					textureUrl = (textureLocationSplit.length == 3 ? textureLocationSplit[2] : null);
+				} catch (ResourceLocationException e) {
+					textureLocation = DEFAULT_NPC_TEXTURE;
+					textureUrl = null;
+				}
+			} else {
+				textureLocation = DEFAULT_NPC_TEXTURE;
+				textureUrl = null;
+			}
 			try {
-				this.setEntityTexture(new ResourceLocation(compound.getString("Texture")));
+				this.setEntityTexture(textureLocation, textureUrl);
 			} catch (ResourceLocationException e) {
 				this.setEntityTexture(DEFAULT_NPC_TEXTURE);
 			}
@@ -464,13 +491,25 @@ public class NPCEntity extends CreatureEntity {
 			this.setDisplayName(displayName);
 		}
 		
+		String textureLocationStr = this.dataManager.get(TEXTURE_LOCATION);
+		String[] textureLocationSplit = textureLocationStr.split(":", 3);
 		ResourceLocation textureLocation;
-		try {
-			textureLocation = new ResourceLocation(this.dataManager.get(TEXTURE_LOCATION));
-		} catch (ResourceLocationException e) {
+		String textureUrl;
+		if(textureLocationSplit.length >= 2) {
+			try {
+				textureLocation = new ResourceLocation(textureLocationSplit[0], textureLocationSplit[1]);
+				textureUrl = (textureLocationSplit.length == 3 ? textureLocationSplit[2] : null);
+			} catch (ResourceLocationException e) {
+				textureLocation = DEFAULT_NPC_TEXTURE;
+				textureUrl = null;
+			}
+		} else {
 			textureLocation = DEFAULT_NPC_TEXTURE;
+			textureUrl = null;
 		}
-		if(!this.npcTexture.equals(textureLocation)) {
+		if(this.npcTextureUrl != textureUrl && (this.npcTextureUrl == null || !this.npcTextureUrl.equals(textureUrl))) {
+			this.setEntityTexture(textureLocation, textureUrl);
+		} else if(!this.npcTexture.equals(textureLocation)) {
 			this.setEntityTexture(textureLocation);
 		}
 	}

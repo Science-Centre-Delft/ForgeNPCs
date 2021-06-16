@@ -5,6 +5,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import forgenpcs.NPCEntity;
 import forgenpcs.client.renderer.entity.model.NPCArmorModel;
 import forgenpcs.client.renderer.entity.model.NPCModel;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.LivingRenderer;
@@ -13,6 +14,8 @@ import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.client.renderer.entity.layers.HeadLayer;
 import net.minecraft.client.renderer.entity.layers.HeldItemLayer;
 import net.minecraft.client.renderer.entity.model.BipedModel;
+import net.minecraft.client.renderer.texture.DownloadingTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
@@ -105,7 +108,25 @@ public class RenderNPC extends LivingRenderer<NPCEntity, NPCModel<NPCEntity>> {
 	 */
 	@Override
 	public ResourceLocation getEntityTexture(NPCEntity npc) {
-		return npc.getEntityTexture();
+		
+		// Get texture information.
+		String textureUrl = npc.getEntityTextureUrl();
+		ResourceLocation textureLocation = npc.getEntityTexture();
+		
+		// Return the texture if it is an offline texture.
+		if(textureUrl == null) {
+			return textureLocation;
+		}
+		
+		// Download and cache the texture if it is a not-yet-cached online texture.
+		TextureManager textureManager = Minecraft.getInstance().getTextureManager();
+		if(textureManager.getTexture(textureLocation) == null) {
+			textureManager.loadTexture(
+					textureLocation, new DownloadingTexture(null, textureUrl, textureLocation, false, null));
+		}
+		
+		// Return the texture location.
+		return textureLocation;
 	}
 	
 	@Override
