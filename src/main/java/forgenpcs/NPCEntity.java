@@ -97,6 +97,11 @@ public class NPCEntity extends CreatureEntity {
 	protected void registerGoals() {
 	}
 	
+	@Override
+	public boolean canDespawn(double distanceToClosestPlayer) {
+		return false;
+	}
+	
 	public void setLookAtPlayer(boolean lookAtPlayer) {
 		if(lookAtPlayer && this.lookAtPlayerGoal == null) {
 			this.lookAtPlayerGoal = new LookAtGoal(this, PlayerEntity.class, 10f, 1f) {
