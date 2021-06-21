@@ -15,7 +15,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = "MC1.16.5-V0.0.1"
+version = "MC1.16.5-V0.0.2"
 group = "forgenpcs" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "ForgeNPCs"
 
