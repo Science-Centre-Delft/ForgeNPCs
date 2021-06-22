@@ -151,6 +151,7 @@ public class NPCEntity extends CreatureEntity {
 			this.goalSelector.addGoal(1, this.panicGoal);
 		} else if(movementSpeed <= 0 && this.panicGoal != null) {
 			this.goalSelector.removeGoal(this.panicGoal);
+			this.panicGoalSpeed = -1d;
 			this.panicGoal = null;
 		}
 	}
@@ -307,7 +308,9 @@ public class NPCEntity extends CreatureEntity {
 		compound.putBoolean("LookAtPlayer", this.lookAtPlayerGoal != null);
 		compound.putBoolean("LookRandomly", this.lookRandomlyGoal != null);
 		compound.putBoolean("WaterAvoidingRandomWalkingGoal", this.waterAvoidingRandomWalkingGoal != null);
-		compound.putDouble("PanicSpeed", this.panicGoalSpeed);
+		if(this.panicGoalSpeed >= 0d) {
+			compound.putDouble("PanicSpeed", this.panicGoalSpeed);
+		}
 	}
 	
 	@Override
