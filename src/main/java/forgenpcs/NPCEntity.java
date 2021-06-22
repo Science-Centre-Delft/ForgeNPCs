@@ -82,6 +82,7 @@ public class NPCEntity extends CreatureEntity {
 	private Goal lookAtPlayerGoal = null;
 	private Goal lookRandomlyGoal = null;
 	private Goal waterAvoidingRandomWalkingGoal = null;
+	private double waterAvoidingRandomWalkingSpeed = -1d;
 	private Goal panicGoal = null;
 	private double panicGoalSpeed = -1d;
 	
@@ -129,12 +130,15 @@ public class NPCEntity extends CreatureEntity {
 		}
 	}
 	
-	public void setWaterAvoidingRandomWalking(boolean waterAvoidingRandomWalking) {
-		if(waterAvoidingRandomWalking && this.waterAvoidingRandomWalkingGoal == null) {
-			this.waterAvoidingRandomWalkingGoal = new WaterAvoidingRandomWalkingGoal(this, 0.35d);
+	public void setWaterAvoidingRandomWalking(double waterAvoidingRandomWalkingSpeed) {
+		if(waterAvoidingRandomWalkingSpeed > 0 && this.waterAvoidingRandomWalkingGoal == null) {
+			this.waterAvoidingRandomWalkingSpeed = waterAvoidingRandomWalkingSpeed;
+			this.waterAvoidingRandomWalkingGoal =
+					new WaterAvoidingRandomWalkingGoal(this, waterAvoidingRandomWalkingSpeed);
 			this.goalSelector.addGoal(1, this.waterAvoidingRandomWalkingGoal);
-		} else if(!waterAvoidingRandomWalking && this.waterAvoidingRandomWalkingGoal != null) {
+		} else if(waterAvoidingRandomWalkingSpeed <= 0 && this.waterAvoidingRandomWalkingGoal != null) {
 			this.goalSelector.removeGoal(this.waterAvoidingRandomWalkingGoal);
+			this.waterAvoidingRandomWalkingSpeed = -1d;
 			this.waterAvoidingRandomWalkingGoal = null;
 		}
 	}
@@ -307,7 +311,9 @@ public class NPCEntity extends CreatureEntity {
 		// Write goal data.
 		compound.putBoolean("LookAtPlayer", this.lookAtPlayerGoal != null);
 		compound.putBoolean("LookRandomly", this.lookRandomlyGoal != null);
-		compound.putBoolean("WaterAvoidingRandomWalkingGoal", this.waterAvoidingRandomWalkingGoal != null);
+		if(this.waterAvoidingRandomWalkingSpeed >= 0d) {
+			compound.putDouble("WaterAvoidingRandomWalkingSpeed", this.waterAvoidingRandomWalkingSpeed);
+		}
 		if(this.panicGoalSpeed >= 0d) {
 			compound.putDouble("PanicSpeed", this.panicGoalSpeed);
 		}
@@ -373,8 +379,8 @@ public class NPCEntity extends CreatureEntity {
 		// Read goal data.
 		this.setLookAtPlayer(compound.contains("LookAtPlayer", 1) && compound.getBoolean("LookAtPlayer"));
 		this.setLookRandomly(compound.contains("LookRandomly", 1) && compound.getBoolean("LookRandomly"));
-		this.setWaterAvoidingRandomWalking(compound.contains("WaterAvoidingRandomWalking", 1)
-				&& compound.getBoolean("WaterAvoidingRandomWalking"));
+		this.setWaterAvoidingRandomWalking(compound.contains("WaterAvoidingRandomWalkingSpeed", 6)
+				? compound.getDouble("WaterAvoidingRandomWalkingSpeed") : -1d);
 		this.setPanic(compound.contains("PanicSpeed", 6) ? compound.getDouble("PanicSpeed") : -1d);
 	}
 	
