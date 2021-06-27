@@ -130,7 +130,9 @@ public class RenderNPC extends LivingRenderer<NPCEntity, NPCModel<NPCEntity>> {
 //			}
 //		}
 		
-		super.renderName(npc, displayName, matrixStack, buffer, packedLight);
+		if(displayName != null) {
+			super.renderName(npc, displayName, matrixStack, buffer, packedLight);
+		}
 		matrixStack.pop();
 	}
 	

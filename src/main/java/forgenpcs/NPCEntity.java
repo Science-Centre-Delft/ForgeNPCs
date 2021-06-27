@@ -62,7 +62,7 @@ public class NPCEntity extends CreatureEntity {
 	
 	public static final DataParameter<String> TEXTURE_LOCATION = EntityDataManager.createKey(NPCEntity.class, DataSerializers.STRING);
 	
-	public static final ITextComponent DEFAULT_DISPLAY_NAME = new StringTextComponent(ForgeNPCsMod.MODID + ":npc");
+	public static final ITextComponent DEFAULT_DISPLAY_NAME = null;
 	public static final DataParameter<ITextComponent> DISPLAY_NAME = EntityDataManager.createKey(NPCEntity.class, DataSerializers.TEXT_COMPONENT);
 	
 	private Rotations headRotation = DEFAULT_HEAD_ROTATION;
@@ -474,7 +474,8 @@ public class NPCEntity extends CreatureEntity {
 			this.setRightLegRotation(rightLegRotation);
 		}
 		ITextComponent displayName = this.dataManager.get(DISPLAY_NAME);
-		if(!this.displayName.equals(displayName)) {
+		if((this.displayName != null && !this.displayName.equals(displayName))
+				|| (this.displayName == null && displayName != null)) {
 			this.setDisplayName(displayName);
 		}
 		
