@@ -1,7 +1,7 @@
 package forgenpcs.client;
 
 import forgenpcs.ForgeNPCsMod;
-import forgenpcs.common.CommonRegistry;
+import forgenpcs.shared.CommonRegistry;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

@@ -4,8 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import forgenpcs.client.ClientRegistry;
-import forgenpcs.common.CommonRegistry;
-import forgenpcs.common.item.ModdedSpawnEggItem;
+import forgenpcs.shared.CommonRegistry;
+import forgenpcs.shared.item.ModdedSpawnEggItem;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;

@@ -2,7 +2,7 @@
  * This file is a modified copy from:
  * https://github.com/Cadiboo/Example-Mod/blob/1.15.2/src/main/java/io/github/cadiboo/examplemod/item/ModdedSpawnEggItem.java
  */
-package forgenpcs.common.item;
+package forgenpcs.shared.item;
 
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.dispenser.DefaultDispenseItemBehavior;
