@@ -24,8 +24,10 @@ NPCs can be summoned using the Minecraft `/summon <entityType> <x> <y> <z> [enti
 - `ArmorItems`
 	- Syntax: `[<feetItem>, <legsItem>, <chestItem>, <headItem>]` where all items are json objects describing valid Minecraft items (e.g. `[{}, {}, {}, {}]` for no worn items).
 - `Texture`
-	- Syntax: `<string>` (e.g. `forgenpcs:textures/entity/npc/villager/male_1_1.png`).
-	- Sets the texture used for the NPC. This texture is in format `<namespace>:<texturePath>`. This has access to all ForgeNPCs textures, resource pack textures and textures from other mods.
+	- Syntax: `<string>` (e.g. `forgenpcs:textures/entity/npc/villager/male_1_1.png` or `entity.npc.villager.male_1_1`).
+	- Sets the texture used for the NPC. This supports two formats:
+		- Format 1: `<namespace>:<texturePath>`. This has access to all client-side ForgeNPCs textures, resource pack textures and textures from other mods.
+		- Format 2: `<serverTexturePath>`. This is a file path to a `.png` file using `.` as file separator (`.png` should not be included in the path). The path is relative to the `mods/forgenpcs/Textures` directory on the server. Note that these textures are provided by the server and do not have to be present in client resources.
 - `LookAtPlayer`
 	- Syntax: `<boolean>` (e.g. `true`).
 	- If set to `true`, makes the NPC look at the player when the player is within a 10 block radius.

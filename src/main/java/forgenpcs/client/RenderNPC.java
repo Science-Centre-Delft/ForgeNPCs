@@ -100,12 +100,14 @@ public class RenderNPC extends LivingRenderer<NPCEntity, NPCModel<NPCEntity>> {
 	}
 	
 	/**
-	 * Returns the location of this entity's texture.
+	 * Returns the location of this entity's texture. If the texture is not available on the client and has not yet
+	 * been received by the client, {@link NPCEntity#DEFAULT_NPC_TEXTURE} is returned and the texture is requested
+	 * from the server.
 	 * @param npc - The entity to get the texture from.
 	 */
 	@Override
 	public ResourceLocation getEntityTexture(NPCEntity npc) {
-		return npc.getEntityTexture();
+		return DynamicTextureManager.getTextureResourceLocation(npc.getEntityTexture(), NPCEntity.DEFAULT_NPC_TEXTURE);
 	}
 	
 	@Override

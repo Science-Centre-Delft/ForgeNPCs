@@ -247,6 +247,12 @@ public class NPCEntity extends CreatureEntity {
 		return this.npcTexture;
 	}
 	
+	private ResourceLocation getTextureResourceLocation(String textureLocation) throws ResourceLocationException {
+		return (textureLocation.indexOf(':') == -1
+				? new ResourceLocation(ForgeNPCsMod.MODID, textureLocation)
+				: new ResourceLocation(textureLocation));
+	}
+	
 	@Override
 	public void writeAdditional(CompoundNBT compound) {
 		super.writeAdditional(compound);
@@ -367,7 +373,7 @@ public class NPCEntity extends CreatureEntity {
 		// Read texture location.
 		if(compound.contains("Texture", 8)) {
 			try {
-				this.setEntityTexture(new ResourceLocation(compound.getString("Texture")));
+				this.setEntityTexture(this.getTextureResourceLocation(compound.getString("Texture")));
 			} catch (ResourceLocationException e) {
 				this.setEntityTexture(DEFAULT_NPC_TEXTURE);
 			}
@@ -480,8 +486,9 @@ public class NPCEntity extends CreatureEntity {
 		}
 		
 		ResourceLocation textureLocation;
+		String textureLocationStr = this.dataManager.get(TEXTURE_LOCATION);
 		try {
-			textureLocation = new ResourceLocation(this.dataManager.get(TEXTURE_LOCATION));
+			textureLocation = this.getTextureResourceLocation(textureLocationStr);
 		} catch (ResourceLocationException e) {
 			textureLocation = DEFAULT_NPC_TEXTURE;
 		}
