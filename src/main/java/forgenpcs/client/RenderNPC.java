@@ -2,9 +2,9 @@ package forgenpcs.client;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-import forgenpcs.NPCEntity;
 import forgenpcs.client.renderer.entity.model.NPCArmorModel;
 import forgenpcs.client.renderer.entity.model.NPCModel;
+import forgenpcs.shared.entity.NPCEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.LivingRenderer;

@@ -1,6 +1,6 @@
 package forgenpcs.client.renderer.entity.model;
 
-import forgenpcs.NPCEntity;
+import forgenpcs.shared.entity.NPCEntity;
 import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

@@ -1,7 +1,7 @@
 package forgenpcs.shared;
 
 
-import forgenpcs.NPCEntity;
+import forgenpcs.shared.entity.NPCEntity;
 import forgenpcs.shared.item.ModdedSpawnEggItem;
 import forgenpcs.ForgeNPCsMod;
 import net.minecraft.entity.EntityClassification;

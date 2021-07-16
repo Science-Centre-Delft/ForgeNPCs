@@ -6,7 +6,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 
-import forgenpcs.NPCEntity;
+import forgenpcs.shared.entity.NPCEntity;
 
 import java.util.List;
 import java.util.Random;

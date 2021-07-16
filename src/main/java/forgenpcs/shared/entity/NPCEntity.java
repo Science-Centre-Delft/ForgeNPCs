@@ -1,7 +1,8 @@
-package forgenpcs;
+package forgenpcs.shared.entity;
 
 import com.google.gson.JsonParseException;
 
+import forgenpcs.ForgeNPCsMod;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
