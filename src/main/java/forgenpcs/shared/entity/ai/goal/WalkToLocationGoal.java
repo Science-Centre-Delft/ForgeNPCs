@@ -13,6 +13,11 @@ public class WalkToLocationGoal extends Goal {
 	private final Vector3d targetLocation;
 	private final WalkToLocationCallback callback;
 	
+	private static final int MAX_INITIAL_NO_PATH_TICKS = 10;
+	private int initialNoPathTicks;
+	private boolean hasFoundPath = false;
+	private boolean hasReachedTarget = false;
+	
 	public WalkToLocationGoal(MobEntity entity, Vector3d targetLocation, double speed) {
 		this(entity, targetLocation, speed, null);
 	}
@@ -36,31 +41,63 @@ public class WalkToLocationGoal extends Goal {
 	
 	@Override
 	public boolean shouldExecute() {
-		return this.targetLocation != null && this.entity.getDistanceSq(this.targetLocation) >= 0.01d;
+		return !this.hasReachedTarget && this.targetLocation != null;
 	}
 	
 	@Override
 	public void startExecuting() {
 		PathNavigator navigator = this.entity.getNavigator();
 		navigator.setSearchDepthMultiplier(1000f);
-		navigator.setPath(this.entity.getNavigator().pathfind(
+		navigator.setPath(navigator.pathfind(
 				this.targetLocation.x, this.targetLocation.y, this.targetLocation.z, 0), this.speed);
+		this.hasFoundPath = navigator.hasPath();
+		this.initialNoPathTicks = 0;
 	}
 	
 	@Override
 	public boolean shouldContinueExecuting() {
-		boolean shouldContinueExecuting = !this.entity.getNavigator().noPath();
-		if(!shouldContinueExecuting) {
-			this.entity.setPosition(this.targetLocation.x, this.targetLocation.y, this.targetLocation.z);
-			if(this.callback != null) {
-				try {
-					this.callback.onPathFinished();
-				} catch (Throwable t) {
-					t.printStackTrace();
+		return this.shouldExecute();
+	}
+	
+	@Override
+	public void tick() {
+		if(!this.hasReachedTarget && this.entity.getNavigator().noPath()) {
+			this.entity.getNavigator().setPath(this.entity.getNavigator().pathfind(
+					this.targetLocation.x, this.targetLocation.y, this.targetLocation.z, 0), this.speed);
+			boolean hasFoundPath = this.entity.getNavigator().hasPath();
+			
+			if(this.hasFoundPath) {
+				if(!hasFoundPath || this.entity.getDistanceSq(this.targetLocation) <= 1d) {
+					this.teleportToTarget();
+				}
+			} else {
+				if(!hasFoundPath) {
+					this.initialNoPathTicks++;
+					if(this.initialNoPathTicks > MAX_INITIAL_NO_PATH_TICKS) {
+						this.teleportToTarget();
+					}
+				} else {
+					this.hasFoundPath = true;
 				}
 			}
 		}
-		return shouldContinueExecuting;
+	}
+	
+	private void teleportToTarget() {
+		this.entity.getNavigator().clearPath();
+		this.entity.setPosition(this.targetLocation.x, this.targetLocation.y, this.targetLocation.z);
+		this.hasReachedTarget = true;
+		this.callPathFinishedCallback();
+	}
+	
+	private void callPathFinishedCallback() {
+		if(this.callback != null) {
+			try {
+				this.callback.onPathFinished();
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+		}
 	}
 	
 	@Override
