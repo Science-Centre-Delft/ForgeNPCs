@@ -4,6 +4,7 @@ import com.google.gson.JsonParseException;
 
 import forgenpcs.ForgeNPCsMod;
 import forgenpcs.shared.entity.ai.goal.WalkToLocationGoal;
+import forgenpcs.shared.entity.ai.goal.WalkToLocationGoal.WalkToLocationCallback;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -165,13 +166,17 @@ public class NPCEntity extends CreatureEntity {
 	}
 	
 	public void setWalkLocationTarget(double x, double y, double z, double speed) {
+		this.setWalkLocationTarget(x, y, z, speed, null);
+	}
+	
+	public void setWalkLocationTarget(double x, double y, double z, double speed, WalkToLocationCallback callback) {
 		if(this.walkToLocationGoal != null) {
 			this.walkToLocationGoal.resetTask();
 			this.goalSelector.removeGoal(this.walkToLocationGoal);
 			this.walkToLocationGoal = null;
 		}
 		if(speed > 0) {
-			this.walkToLocationGoal = new WalkToLocationGoal(this, new Vector3d(x, y, z), speed);
+			this.walkToLocationGoal = new WalkToLocationGoal(this, new Vector3d(x, y, z), speed, callback);
 			this.goalSelector.addGoal(1, this.walkToLocationGoal);
 		}
 	}
