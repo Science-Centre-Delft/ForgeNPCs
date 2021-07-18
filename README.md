@@ -43,6 +43,9 @@ NPCs can be summoned using the Minecraft `/summon <entityType> <x> <y> <z> [enti
 - `Sneaking`
 	- Syntax: `<boolean>` (e.g. `true`).
 	- Sets the NPC sneaking state.
+- `WalkToLocation`
+	- Syntax: `{x: <double>, y: <double>, z: <double>, speed: <double>}`.
+	- If the speed is greater than 0, makes the NPC walk towards the given absolute position.
 
 ## Example NPC summon commands
 - Summons an NPC named "Pieter" with 1 health with its arms in the air:

@@ -3,6 +3,7 @@ package forgenpcs.shared.entity;
 import com.google.gson.JsonParseException;
 
 import forgenpcs.ForgeNPCsMod;
+import forgenpcs.shared.entity.ai.goal.WalkToLocationGoal;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -28,6 +29,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.ResourceLocationException;
 import net.minecraft.util.math.Rotations;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -40,7 +42,6 @@ public class NPCEntity extends CreatureEntity {
 	 * TODO - Determine which aspects of the entity should be setable.
 	 * Potentially unimplemented interesting things to set/control:
 	 *     Body part positions.
-	 *     Move from A to B, possibly through pathfinding "AI". Should have a walking animation.
 	 *     Animations (ability to define target rotations and positions at given timestamps, lerping between them).
 	 */
 	
@@ -86,6 +87,7 @@ public class NPCEntity extends CreatureEntity {
 	private double waterAvoidingRandomWalkingSpeed = -1d;
 	private Goal panicGoal = null;
 	private double panicGoalSpeed = -1d;
+	private WalkToLocationGoal walkToLocationGoal = null;
 	
 	public NPCEntity(EntityType<? extends CreatureEntity> entityType, World world) {
 		super(entityType, world);
@@ -158,6 +160,18 @@ public class NPCEntity extends CreatureEntity {
 			this.goalSelector.removeGoal(this.panicGoal);
 			this.panicGoalSpeed = -1d;
 			this.panicGoal = null;
+		}
+	}
+	
+	public void setWalkLocationTarget(double x, double y, double z, double speed) {
+		if(this.walkToLocationGoal != null) {
+			this.walkToLocationGoal.resetTask();
+			this.goalSelector.removeGoal(this.walkToLocationGoal);
+			this.walkToLocationGoal = null;
+		}
+		if(speed > 0) {
+			this.walkToLocationGoal = new WalkToLocationGoal(this, new Vector3d(x, y, z), speed);
+			this.goalSelector.addGoal(1, this.walkToLocationGoal);
 		}
 	}
 	
@@ -324,6 +338,14 @@ public class NPCEntity extends CreatureEntity {
 		if(this.panicGoalSpeed >= 0d) {
 			compound.putDouble("PanicSpeed", this.panicGoalSpeed);
 		}
+		if(this.walkToLocationGoal != null && this.walkToLocationGoal.getTargetLocation() != null) {
+			CompoundNBT posNBT = new CompoundNBT();
+			posNBT.putDouble("x", this.walkToLocationGoal.getTargetLocation().x);
+			posNBT.putDouble("y", this.walkToLocationGoal.getTargetLocation().y);
+			posNBT.putDouble("z", this.walkToLocationGoal.getTargetLocation().z);
+			posNBT.putDouble("speed", this.walkToLocationGoal.getSpeed());
+			compound.put("WalkToLocation", posNBT);
+		}
 	}
 	
 	@Override
@@ -389,6 +411,11 @@ public class NPCEntity extends CreatureEntity {
 		this.setWaterAvoidingRandomWalking(compound.contains("WaterAvoidingRandomWalkingSpeed", 6)
 				? compound.getDouble("WaterAvoidingRandomWalkingSpeed") : -1d);
 		this.setPanic(compound.contains("PanicSpeed", 6) ? compound.getDouble("PanicSpeed") : -1d);
+		if(compound.contains("WalkToLocation", 10)) {
+			CompoundNBT posNBT = compound.getCompound("WalkToLocation");
+			this.setWalkLocationTarget(
+					posNBT.getDouble("x"), posNBT.getDouble("y"), posNBT.getDouble("z"), posNBT.getDouble("speed"));
+		}
 	}
 	
 	public void setHeadRotation(Rotations vec) {
