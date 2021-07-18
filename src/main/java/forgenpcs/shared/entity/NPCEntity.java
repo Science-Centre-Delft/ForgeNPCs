@@ -91,6 +91,7 @@ public class NPCEntity extends CreatureEntity {
 	
 	public NPCEntity(EntityType<? extends CreatureEntity> entityType, World world) {
 		super(entityType, world);
+		this.stepHeight = 1f;
 	}
 	
 	public static AttributeModifierMap.MutableAttribute registerAttributes() {
