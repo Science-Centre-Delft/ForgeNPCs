@@ -47,14 +47,14 @@ public class ServerPacketHandler {
 		String textureLocation = packet.textureLocation;
 		File textureFile;
 		if(!textureLocation.matches("[a-zA-Z0-9\\-_]+(\\.[a-zA-Z0-9\\-_]+)*")) {
-			LOGGER.warn("Player " + ctxSupplier.get().getSender().getName() + " has sent "
+			LOGGER.warn("Player " + ctxSupplier.get().getSender().getName().getString() + " has sent "
 					+ packet.getClass().getSimpleName() + " packet with invalid texture location: " + textureLocation);
 			return;
 		}
 		String textureFileLocation = textureLocation.replace('.', File.separatorChar) + ".png";
 		textureFile = new File(ForgeNPCsMod.TEXTURE_STORAGE_DIR.getAbsolutePath(), textureFileLocation);
 		if(!textureFile.isFile()) {
-			LOGGER.warn("Player " + ctxSupplier.get().getSender().getName()
+			LOGGER.warn("Player " + ctxSupplier.get().getSender().getName().getString()
 					+ " has requested unexisting texture: " + textureFileLocation);
 			return;
 		}
@@ -65,7 +65,7 @@ public class ServerPacketHandler {
 			textureBytes = FileUtils.readFileToByteArray(textureFile);
 		} catch (IOException e) {
 			LOGGER.warn("Exception while reading texture file for player "
-					+ ctxSupplier.get().getSender().getName() + ": " + textureFile.getAbsolutePath(), e);
+					+ ctxSupplier.get().getSender().getName().getString() + ": " + textureFile.getAbsolutePath(), e);
 			return;
 		}
 		
