@@ -1,6 +1,7 @@
 {
 	"package": "forgenpcs.mixin",
 	"refmap": "mixins.forgenpcs.refmap.json",
+	"minVersion": "0.8.2",
 	"mixins": [
 	]
 }
