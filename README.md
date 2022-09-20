@@ -10,7 +10,7 @@ NPCs can be summoned using the Minecraft `/summon <entityType> <x> <y> <z> [enti
 	- Syntax: `[<float>]` (e.g. `[180f]`).
 	- Sets the NPC yaw (0 to 360 degrees).
 - `Health`
-	- Symtax: `<int>` (e.g. `1`).
+	- Syntax: `<int>` (e.g. `1`).
 	- Sets the NPC initial health. Setting this to 1 causes the NPC to die by a single hit.
 - `DisplayName`
 	- Syntax: `<string>` (e.g. `"Steve"`).
