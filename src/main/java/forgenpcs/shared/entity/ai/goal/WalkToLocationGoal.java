@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.pathfinding.PathNavigator;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 
 public class WalkToLocationGoal extends Goal {
@@ -14,8 +15,9 @@ public class WalkToLocationGoal extends Goal {
 	private final WalkToLocationCallback callback;
 	
 	private static final int MAX_INITIAL_NO_PATH_TICKS = 10;
-	private int initialNoPathTicks;
-	private boolean hasFoundPath = false;
+	private static final int MAX_NO_PATH_TICKS = 10;
+	private int noPathTicks;
+	private boolean hasFoundInitialPath = false;
 	private boolean hasReachedTarget = false;
 	
 	public WalkToLocationGoal(MobEntity entity, Vector3d targetLocation, double speed) {
@@ -50,8 +52,8 @@ public class WalkToLocationGoal extends Goal {
 		navigator.setSearchDepthMultiplier(1000f);
 		navigator.setPath(navigator.pathfind(
 				this.targetLocation.x, this.targetLocation.y, this.targetLocation.z, 0), this.speed);
-		this.hasFoundPath = navigator.hasPath();
-		this.initialNoPathTicks = 0;
+		this.hasFoundInitialPath = navigator.hasPath();
+		this.noPathTicks = 0;
 	}
 	
 	@Override
@@ -66,18 +68,21 @@ public class WalkToLocationGoal extends Goal {
 					this.targetLocation.x, this.targetLocation.y, this.targetLocation.z, 0), this.speed);
 			boolean hasFoundPath = this.entity.getNavigator().hasPath();
 			
-			if(this.hasFoundPath) {
-				if(!hasFoundPath || this.entity.getDistanceSq(this.targetLocation) <= 1d) {
-					this.teleportToTarget();
-				}
+			if(this.entity.getDistanceSq(this.targetLocation) <= 1d) {
+				
+				// Snap to target position when close enough.
+				this.teleportToTarget();
 			} else {
+				
+				// Teleport to target position if no path has been found for longer than the allowed tick threshold.
 				if(!hasFoundPath) {
-					this.initialNoPathTicks++;
-					if(this.initialNoPathTicks > MAX_INITIAL_NO_PATH_TICKS) {
+					this.noPathTicks++;
+					if(this.noPathTicks > (this.hasFoundInitialPath ? MAX_NO_PATH_TICKS : MAX_INITIAL_NO_PATH_TICKS)) {
 						this.teleportToTarget();
 					}
 				} else {
-					this.hasFoundPath = true;
+					this.hasFoundInitialPath = true;
+					this.noPathTicks = 0;
 				}
 			}
 		}
